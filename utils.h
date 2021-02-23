@@ -88,3 +88,11 @@ double rand_normal() {
     return X;
 }
 
+double compute_dist(const double* const vec1, const double* const vec2, const int dim) {
+    int i;
+    double sq_dist = 0.0;
+    for (i = 0; i < dim; i++) {
+        sq_dist += (vec1[i] - vec2[i])*(vec1[i] - vec2[i]);
+    }
+    return sqrt(sq_dist);
+}
