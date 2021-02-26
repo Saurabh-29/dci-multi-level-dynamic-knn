@@ -21,7 +21,11 @@ struct Cmp{
 bool operator() (Val a, Val b)
 {   
     if (a.val == b.val)
-    {
+    {   
+        if(a.global_id==b.global_id){
+            return a.local_id<b.local_id;
+        }
+        
         return a.global_id<b.global_id;
     }
     return a.val<b.val;
@@ -34,6 +38,7 @@ typedef struct Node
     Node *prev;
     // Node **next;
     vector < Node *> next;
+    set<Val, Cmp> top_candidates;
     set< Val, Cmp>  *s;
 }Node;
 
