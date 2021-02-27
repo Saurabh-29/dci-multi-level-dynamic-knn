@@ -50,7 +50,7 @@ void init_node(Node* node, dci* const dci_inst, int id =-1, int level = 0){
     cout<<"value of somethings check :"<< dci_inst->num_comp_indices<< dci_inst->num_simp_indices<<"  "<<node->global_id<<endl;
 
 }
-void insert_val_in_par(dci* const dci_inst, int par, int child, double* data_proj)
+void insert_val_in_par(dci* const dci_inst, int par, int child)
 {       
     int num_indices = dci_inst->num_comp_indices*dci_inst->num_simp_indices;
     int size = dci_inst->nodes[par]->next.size();
@@ -63,7 +63,7 @@ void insert_val_in_par(dci* const dci_inst, int par, int child, double* data_pro
     for(int j=0;j< num_indices;j++)
     {
         Val var; 
-        var.val = data_proj[(child-1)*num_indices + j];
+        var.val = dci_inst->nodes[child]->proj_loc[j]; //   data_proj[(child-1)*num_indices + j];
         var.global_id = child-1;
         var.local_id = size;
         dci_inst->nodes[par]->s[j].insert(var);
@@ -99,7 +99,7 @@ Val dci_next_closest_proj(const set<Val, Cmp> &s, set<Val>::iterator &left, set<
 
 
 
-void dci_query_single_point_single_level(const dci* const dci_inst, Node* point_to_consider_next, int actual_level, int num_neighbours, const double* const query, const double* const query_proj, dci_query_config query_config, set<Val,Cmp >&  top_candidates_new, const double* const data)
+void dci_query_single_point_single_level(const dci* const dci_inst, Node* point_to_consider_next, int actual_level, int num_neighbours, const double* const query, const double* const query_proj, dci_query_config query_config, set<Val,Cmp >&  top_candidates_new)
 {   cout<<"\n in the final query loop";
     int i, k, m, h;
     double cur_dist;
@@ -225,7 +225,7 @@ void get_finest_level_points(Node* point_to_consider_next){
     return;
 }
 
-int dci_query_single_point(const dci* const dci_inst, int actual_level, int num_neighbours, const double* const query, const double* const query_proj, dci_query_config query_config, set<Val,Cmp >& top_candidates, const double* const data, int flag_1=0){
+int dci_query_single_point(const dci* const dci_inst, int actual_level, int num_neighbours, const double* const query, const double* const query_proj, dci_query_config query_config, set<Val,Cmp >& top_candidates, int flag_1=0, int start_node = 0){
     queue< Node * > points_to_expand;
     int query_flag=flag_1;
     Val var;
@@ -234,7 +234,7 @@ int dci_query_single_point(const dci* const dci_inst, int actual_level, int num_
     {
         cout<<(*it).global_id<<"\t";
     }
-    points_to_expand.push(dci_inst->nodes[0]);
+    points_to_expand.push(dci_inst->nodes[start_node]);
      while (!points_to_expand.empty())
      {
         Node* point_to_consider_next = points_to_expand.front();
@@ -253,7 +253,7 @@ int dci_query_single_point(const dci* const dci_inst, int actual_level, int num_
             cout<<"----------------------------------------------------------------------------------------------------------------------****************************------------------------------------------------------";
         }else{
             set <Val, Cmp>  top_candidate_new;
-            dci_query_single_point_single_level(dci_inst, point_to_consider_next, actual_level, num_neighbours, query, query_proj, query_config, top_candidate_new, data);
+            dci_query_single_point_single_level(dci_inst, point_to_consider_next, actual_level, num_neighbours, query, query_proj, query_config, top_candidate_new);
             points_to_expand.pop();
 
             cout<<"query flag is <<"<<query_flag<<endl;
@@ -285,13 +285,16 @@ int dci_query_single_point(const dci* const dci_inst, int actual_level, int num_
 }
 
 
-int dci_assign_parent(dci*  dci_inst, const int actual_level, int query_pos, const double* const query, const double* const query_proj, const dci_query_config query_config, const double* const data) {
+int dci_assign_parent(dci*  dci_inst, const int actual_level, int query_pos, const dci_query_config query_config) {
     
     int j;
     int num_indices = dci_inst->num_comp_indices*dci_inst->num_simp_indices;
     int cur_num_returned;
     set <Val, Cmp> top_candidate;
-    cur_num_returned = dci_query_single_point(dci_inst, actual_level, 2, &(query[(query_pos)*dci_inst->dim]), &(query_proj[query_pos*num_indices]), query_config, dci_inst->nodes[query_pos+1]->top_candidates, data);
+    // cout<<"values stored in both-----: "<<&(query[(query_pos)*dci_inst->dim])<<"\t"<<dci_inst->nodes[query_pos+1]->loc<<endl;
+    // cur_num_returned = dci_query_single_point(dci_inst, actual_level, 2, &(query[(query_pos)*dci_inst->dim]), &(query_proj[query_pos*num_indices]), query_config, dci_inst->nodes[query_pos+1]->top_candidates);
+    // cur_num_returned = dci_query_single_point(dci_inst, actual_level, 2, dci_inst->nodes[query_pos+1]->loc, &(query_proj[query_pos*num_indices]), query_config, dci_inst->nodes[query_pos+1]->top_candidates);
+    cur_num_returned = dci_query_single_point(dci_inst, actual_level, 2, dci_inst->nodes[query_pos+1]->loc, dci_inst->nodes[query_pos+1]->proj_loc, query_config, dci_inst->nodes[query_pos+1]->top_candidates);
     cout<<"\n Values after assign tytytt  :";
     for(auto it= dci_inst->nodes[query_pos+1]->top_candidates.begin();it!=dci_inst->nodes[query_pos+1]->top_candidates.end();it++)
     {
@@ -302,7 +305,7 @@ int dci_assign_parent(dci*  dci_inst, const int actual_level, int query_pos, con
     return (*it).global_id;
 }
 
-void delete_node(dci* const dci_inst, Node* point_to_delete_next, double* data_proj, const dci_query_config query_config, const double* const data){
+void delete_node(dci* const dci_inst, Node* point_to_delete_next, const dci_query_config query_config){
 
     int size = point_to_delete_next->next.size();  
     cout<<"\nDeleting node "<< point_to_delete_next->global_id;
@@ -317,7 +320,7 @@ void delete_node(dci* const dci_inst, Node* point_to_delete_next, double* data_p
         for(it; it!=point_to_delete_next->next[i]->top_candidates.end(); it++){
             cout<<(*it).global_id<<"\t"<<(*it).val<<"\t\t";
             if(dci_inst->nodes[(*it).global_id+1]->prev != NULL){
-                insert_val_in_par(dci_inst, (*it).global_id+1, point_to_delete_next->next[i]->global_id+1, data_proj);
+                insert_val_in_par(dci_inst, (*it).global_id+1, point_to_delete_next->next[i]->global_id+1);
                 flag=0;
                 break;
             }
@@ -326,7 +329,7 @@ void delete_node(dci* const dci_inst, Node* point_to_delete_next, double* data_p
         point_to_delete_next->next[i]->top_candidates.erase(point_to_delete_next->next[i]->top_candidates.begin(), it);
         
         if(flag){
-            int par = dci_assign_parent(dci_inst, point_to_delete_next->next[i]->level, point_to_delete_next->next[i]->global_id, data, data_proj, query_config, data);
+            int par = dci_assign_parent(dci_inst, point_to_delete_next->next[i]->level, point_to_delete_next->next[i]->global_id, query_config);
         }
 
         it = point_to_delete_next->next[i]->top_candidates.begin();
@@ -341,7 +344,7 @@ void delete_node(dci* const dci_inst, Node* point_to_delete_next, double* data_p
     for(int j=0;j< num_indices;j++)
     {
         Val var; 
-        var.val = data_proj[global_id*num_indices + j];
+        var.val = point_to_delete_next->proj_loc[j]; // data_proj[global_id*num_indices + j];
         var.global_id = global_id;
         // var.local_id = size;
         it = dci_inst->nodes[par+1]->s[j].find(var);
@@ -473,7 +476,8 @@ void dci_add(dci* const dci_inst, const int dim, const int num_points, const dou
         var.val =0.0; var.global_id =-1; var.local_id = dci_inst->nodes[0]->next.size();
         dci_inst->nodes[j+1]->top_candidates.insert(var);
         dci_inst->nodes[j+1]->loc = &(data[j*dci_inst->dim]);
-        insert_val_in_par(dci_inst, 0, j+1, data_proj);
+        dci_inst->nodes[j+1]->proj_loc =  data_proj + j*num_indices;
+        insert_val_in_par(dci_inst, 0, j+1);
     }
     cout<<"level n-1 inserted\n"<<endl;
 
@@ -482,12 +486,14 @@ void dci_add(dci* const dci_inst, const int dim, const int num_points, const dou
         for(i=0;i<num_points_on_level[h];i++)
         {
             j= level_members[h][i];
-            int par =  dci_assign_parent(dci_inst, h, j, data, data_proj, construction_query_config, data);
+            dci_inst->nodes[j+1]->loc =  data + j*dci_inst->dim; // &(data[j*dci_inst->dim]);
+            dci_inst->nodes[j+1]->proj_loc =  data_proj + j*num_indices;
+            int par =  dci_assign_parent(dci_inst, h, j, construction_query_config);
             // int par = level_members[h+1][rand() % num_points_on_level[h+1]];  //get_parent(j);
             // dci_inst->nodes[j+1]->level = h;
             // dci_inst->nodes[j+1]->prev = dci_inst->nodes[par+1];
-            dci_inst->nodes[j+1]->loc = &(data[j*dci_inst->dim]);
-            insert_val_in_par(dci_inst, par+1, j+1, data_proj);
+            
+            insert_val_in_par(dci_inst, par+1, j+1);
             cout<<"\n ***************parent assigned for node "<<j<<"\t"<<par<<"\n\n";
             for(int ii =0;ii<num_points_on_level[h+1];ii++)
             {   
@@ -518,7 +524,7 @@ void dci_add(dci* const dci_inst, const int dim, const int num_points, const dou
     }
 
     cout<<"\n\n\nDeleting now.....\n";
-    delete_node(dci_inst, dci_inst->nodes[17], data_proj, construction_query_config, data);
+    delete_node(dci_inst, dci_inst->nodes[17], construction_query_config);
     for(i=0;i<dci_inst->nodes.size();i++)
     {
         cout<<"stats for node  "<<i<<"\t"<<dci_inst->nodes[i]->global_id<<"\t"<<dci_inst->nodes[i]->level<<"\t"<<dci_inst->nodes[i]->finest_level_points<<endl;
@@ -561,7 +567,7 @@ void dci_query(dci* const dci_inst, const int dim, const int num_points, const d
     int query_pos =0;
         // cur_num_returned = dci_query_single_point(dci_inst, actual_level, 1, &(query[(query_pos)*dci_inst->dim]), &(query_proj[query_pos*num_indices]), query_config, top_candidate, data);
 
-    int num_returned = dci_query_single_point(dci_inst, 0, 2, &(query[(query_pos)*dci_inst->dim]), &(query_proj[query_pos*num_indices]), construction_query_config, top_candidate, data, 1);
+    int num_returned = dci_query_single_point(dci_inst, 0, 2, &(query[(query_pos)*dci_inst->dim]), &(query_proj[query_pos*num_indices]), construction_query_config, top_candidate, 1);
     for(auto it= top_candidate.begin();it!=top_candidate.end();it++)
     {
         cout<<(*it).global_id<<"\t"<<(*it).val<<"\t";

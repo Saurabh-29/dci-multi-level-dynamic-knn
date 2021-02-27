@@ -55,6 +55,7 @@ typedef struct Node
     vector < Node *> next;
     int finest_level_points=1;
     const double* loc;
+    const double* proj_loc;
     set<Val, Cmp> top_candidates;
     set< Val, Cmp>  *s;
 }Node;
