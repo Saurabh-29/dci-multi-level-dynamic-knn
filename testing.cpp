@@ -28,15 +28,19 @@ static void dci_gen_proj_vec(double* const proj_vec, const int dim, const int nu
     }
 }
 
+void process_data(const double* const data)
+{
+    cout<<"data is      :";
+    int i;
+    for(i=0;i<10;i++)
+    cout<<"  :"<<data[i];
+
+    const double* loc = &(data[5]);
+    cout<<"some selected values :"<<loc[0]<<"\t"<<loc[1]<<endl;
+    exit(0);
+}
 
 
-// struct Val
-// {
-//     double val;
-//     // double *data_ptr;
-//     int global_id;
-//     int local_id;
-// };
 
 struct Node
 {
@@ -243,7 +247,7 @@ int main()
     assert(posix_memalign((void **)&data, 64, sizeof(double)*dim*(num_points+num_queries)) == 0);
 
     gen_data(data, dim, intrinsic_dim, num_points+num_queries);
-    
+    process_data(data);
 
     cout << "\n elements are: "; 
     for(int i=0;i<25;i++)

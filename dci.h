@@ -22,6 +22,21 @@ bool operator() (Val a, Val b)
 {   
     if (a.val == b.val)
     {   
+        // if(a.global_id==b.global_id){
+        //     return a.local_id<b.local_id;
+        // }
+        
+        return a.global_id<b.global_id;
+    }
+    return a.val<b.val;
+}};
+
+
+struct Cmp2{
+bool operator() (Val a, Val b)
+{   
+    if (a.val == b.val)
+    {   
         if(a.global_id==b.global_id){
             return a.local_id<b.local_id;
         }
@@ -38,6 +53,8 @@ typedef struct Node
     Node *prev;
     // Node **next;
     vector < Node *> next;
+    int finest_level_points=1;
+    const double* loc;
     set<Val, Cmp> top_candidates;
     set< Val, Cmp>  *s;
 }Node;
