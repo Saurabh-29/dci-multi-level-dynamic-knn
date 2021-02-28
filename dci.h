@@ -93,12 +93,12 @@ void dci_query_single_point_single_level(const dci* const dci_inst, Node* point_
 void get_finest_level_points(Node* point_to_consider_next);
 int dci_query_single_point(const dci* const dci_inst, int actual_level, int num_neighbours, const double* const query, const double* const query_proj, dci_query_config query_config, set<Val,Cmp >& top_candidates, int if_query, int root_index);
 void dci_assign_parent(dci*  dci_inst, const int actual_level, int query_pos, const dci_query_config query_config, int root_index);
-void delete_node(dci* const dci_inst, Node* point_to_delete_next, const dci_query_config query_config);
+void delete_node(dci* const dci_inst, int id_to_del_next, const dci_query_config query_config);
 void dci_reassign_all_nodes(dci* const dci_inst, int num_points);
 void dci_recompute_top_candidates(dci* const dci_inst, Node* point_to_reassign, const dci_query_config query_config, int root_index);
 void dci_init(dci* const dci_inst, const int dim, const int num_comp_indices, const int num_simp_indices, const int num_levels);
 void dci_add(dci* const dci_inst, const int dim, const int num_points, const double* const data, const int num_levels, const dci_query_config construction_query_config);
 void dci_subsequent_addition(dci* const dci_inst, const int dim, const int num_points, const double* const data, const int num_levels, const dci_query_config construction_query_config);
-void dci_query(dci* const dci_inst, const int dim, const int num_points, const double* const query, const double* const data, const int num_levels, const dci_query_config construction_query_config);
+void dci_query(dci* const dci_inst, const int k_nn, const int num_points, const double* const query, const dci_query_config construction_query_config, set<Val,Cmp >*  top_candidates_new);
 
 #endif // DCI_H
