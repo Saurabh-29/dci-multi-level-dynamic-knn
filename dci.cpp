@@ -23,7 +23,6 @@ static inline int max_i(int a, int b) {
     return a > b ? a : b;
 }
 
-
 static void dci_gen_proj_vec(double* const proj_vec, const int dim, const int num_indices) {
     int i, j;
     double sq_norm, norm;
@@ -608,15 +607,16 @@ void dci_add(dci* const dci_inst, const int dim, const int num_points, const dou
         //     } 
         
     }
+    //print the distance between all the points
     
-    for(i=1;i<dci_inst->nodes.size();i++)
-    {   
-        cout<<"\n";
-        for(j=1;j<dci_inst->nodes.size();j++)
-        {
-            cout<<compute_dist(dci_inst->nodes[i]->loc, dci_inst->nodes[j]->loc, dci_inst->dim)<<"\t";
-        }
-    }
+    // for(i=1;i<dci_inst->nodes.size();i++)
+    // {   
+    //     cout<<"\n";
+    //     for(j=1;j<dci_inst->nodes.size();j++)
+    //     {
+    //         cout<<compute_dist(dci_inst->nodes[i]->loc, dci_inst->nodes[j]->loc, dci_inst->dim)<<"\t";
+    //     }
+    // }
 
     // compute_dist(&(data[h*dci_inst->dim]), query, dci_inst->dim);
 
@@ -752,30 +752,19 @@ void dci_subsequent_addition(dci* const dci_inst, const int dim, const int num_p
             // break;
         }
     }
-    // exit(1);
-    // get_finest_level_points((dci_inst->nodes[0]));
+   
 
     for(i=0;i<dci_inst->nodes.size();i++)
     {
         cout<<"stats for node  "<<i<<"\t"<<dci_inst->nodes[i]->global_id<<"\t"<<dci_inst->nodes[i]->level<<"\t"<<dci_inst->nodes[i]->finest_level_points<<"\t"<<dci_inst->nodes[i]->top_candidates.size()<<endl;
         if(dci_inst->nodes[i]->prev!=NULL)
-        {cout<<"previous global id\t"<<dci_inst->nodes[i]->prev->global_id<<"\n";}
-        // for(j=0;j<dci_inst->nodes[i]->next.size();j++)
-        //     cout<<dci_inst->nodes[i]->next[j]->global_id<<"\t";
-        // cout<<endl;
+         {cout<<"previous global id\t"<<dci_inst->nodes[i]->prev->global_id<<"\n";}
+
         for (auto itr = dci_inst->nodes[i]->s[0].begin(); itr != dci_inst->nodes[i]->s[0].end(); itr++)  
             { 
                 cout << (*itr).global_id<<" "<< (*itr).local_id<<endl; 
             } 
-        // for (auto itr = dci_inst->nodes[i]->s[2].begin(); itr != dci_inst->nodes[i]->s[2].end(); itr++)  
-        //     { 
-        //         cout << (*itr).global_id<<" "<< (*itr).local_id<<endl; 
-        //     } 
-        
     }
-    // exit(0);
-    // cout<<"\n\n\nDeleting now.....\n";
-    // delete_node(dci_inst, dci_inst->nodes[17], construction_query_config);
 
     dci_recompute_top_candidates(dci_inst, dci_inst->nodes[root_index], construction_query_config, 0);
     dci_recompute_top_candidates(dci_inst, dci_inst->nodes[0], construction_query_config, root_index);
@@ -790,30 +779,6 @@ void dci_subsequent_addition(dci* const dci_inst, const int dim, const int num_p
     }
     dci_reassign_all_nodes(dci_inst, dci_inst->num_points+num_points);
 
-    // for(h=actual_num_levels-1;h>=0;h--)
-    // {
-    //     for(i=0;i<num_points_on_level[h];i++)
-    //     {
-    //         j= level_members[h][i];
-    //         // dci_inst->nodes[dci_inst->num_points+j+1]->loc =  data+j*dci_inst->dim; // &(data[j*dci_inst->dim]);
-    //         // dci_inst->nodes[dci_inst->num_points+j+1]->proj_loc =  data_proj + j*num_indices;
-    //         dci_assign_parent(dci_inst, h, dci_inst->num_points+j, construction_query_config, 0);
-    //         int par = (*(dci_inst->nodes[dci_inst->num_points+j+1]->top_candidates.begin())).global_id;
-    //         // int par = level_members[h+1][rand() % num_points_on_level[h+1]];  //get_parent(j);
-    //         // dci_inst->nodes[j+1]->level = h;
-    //         // dci_inst->nodes[j+1]->prev = dci_inst->nodes[par+1];
-            
-    //         insert_val_in_par(dci_inst, par+1, dci_inst->num_points+j+1);
-    //         cout<<"\n ***************parent assigned for node "<<j+dci_inst->num_points<<"\t"<<par<<"\n\n";
-            
-    //         for(int ii =0;ii<num_points_on_level[h+1];ii++)
-    //         {   
-    //             cout<<level_members[h+1][ii]<<"\t"<<compute_dist(dci_inst->nodes[j+1]->loc , dci_inst->nodes[level_members[h+1][ii]+1]->loc, dci_inst->dim)<<"\t";
-    //         }
-    //         // break;
-    //     }
-    // }
-
     for(i=0;i<dci_inst->nodes.size();i++)
     {
         cout<<"stats for node  "<<i<<"\t"<<dci_inst->nodes[i]->global_id<<"\t"<<dci_inst->nodes[i]->level<<"\t"<<dci_inst->nodes[i]->finest_level_points<<"\t"<<dci_inst->nodes[i]->top_candidates.size()<<endl;
@@ -826,26 +791,9 @@ void dci_subsequent_addition(dci* const dci_inst, const int dim, const int num_p
             { 
                 cout << (*itr).global_id<<" "<< (*itr).local_id<<endl; 
             } 
-        // for (auto itr = dci_inst->nodes[i]->s[2].begin(); itr != dci_inst->nodes[i]->s[2].end(); itr++)  
-        //     { 
-        //         cout << (*itr).global_id<<" "<< (*itr).local_id<<endl; 
-        //     } 
-        
     }
     dci_inst->num_points+= num_points;
     return;
-    exit(0);
-    for(i=1;i<dci_inst->nodes.size();i++)
-    {   
-        cout<<"\n";
-        for(j=1;j<dci_inst->nodes.size();j++)
-        {
-            cout<<compute_dist(dci_inst->nodes[i]->loc, dci_inst->nodes[j]->loc, dci_inst->dim)<<"\t";
-        }
-    }
-
-    // compute_dist(&(data[h*dci_inst->dim]), query, dci_inst->dim);
-
 }
 
 void dci_query(dci* const dci_inst, const int dim, const int num_points, const double* const query, const double* const data, const int num_levels, const dci_query_config construction_query_config) {
@@ -867,46 +815,3 @@ void dci_query(dci* const dci_inst, const int dim, const int num_points, const d
     cout<<"results returned"<<endl;
 }
 
-
-int main() 
-{
-    int dim = 25;
-    int intrinsic_dim = 5;
-    int num_points = 25;
-    int num_queries = 20;
-    // Assuming column-major layout, data is dim x num_points
-    
-    double* data;
-    assert(posix_memalign((void **)&data, 64, sizeof(double)*dim*(num_points+num_queries)) == 0);
-    //double* data = (double *)memalign(64, sizeof(double)*dim*(num_points+num_queries));
-    gen_data(data, dim, intrinsic_dim, num_points+num_queries);
-    // Assuming column-major layout, query is dim x num_queries
-    double* query = data + dim*num_points+ dim*10;
-
-    // DCI parameters
-    int num_comp_indices = 2;
-    int num_simp_indices = 5;
-    int num_neighbours = 10;
-    int num_levels = 3;
-    int construction_field_of_view = 10;
-    double construction_prop_to_retrieve = 0.002;
-    int query_field_of_view = 100;
-    double query_prop_to_retrieve = 0.8;
-
-    dci dci_inst;
-    dci_init(&dci_inst, dim, num_comp_indices, num_simp_indices, num_levels);
-    dci_query_config construction_query_config;
-    
-    construction_query_config.blind = false;
-    construction_query_config.num_to_visit = -1;
-    construction_query_config.num_to_retrieve = -1;
-    construction_query_config.prop_to_visit = 1.0;
-    construction_query_config.prop_to_retrieve = construction_prop_to_retrieve;
-    construction_query_config.field_of_view = construction_field_of_view;
-    cout<<"no error till this point"<<endl;
-    dci_add(&dci_inst, dim, num_points, data, num_levels, construction_query_config);
-    dci_subsequent_addition(&dci_inst, dim, 10, data+num_points*dim, num_levels, construction_query_config);
-    dci_query(&dci_inst, dim, num_queries,  query, data, num_levels, construction_query_config);
-    cout<<"query done!!!!"<<endl;    
-    return 0; 
-}

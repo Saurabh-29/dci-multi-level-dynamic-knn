@@ -1,3 +1,6 @@
+#ifndef DCI_H
+#define DCI_H
+
 #include <iostream> 
 #include <set>
 #include <iterator> 
@@ -82,3 +85,20 @@ typedef struct dci_query_config {
     int field_of_view;
     int min_num_finest_level_points;
 } dci_query_config;
+
+
+Val dci_next_closest_proj(const set<Val, Cmp> &s, set<Val>::iterator &left, set<Val>::iterator &right, const double query_proj);
+
+void dci_query_single_point_single_level(const dci* const dci_inst, Node* point_to_consider_next, int actual_level, int num_neighbours, const double* const query, const double* const query_proj, dci_query_config query_config, set<Val,Cmp >&  top_candidates_new);
+void get_finest_level_points(Node* point_to_consider_next);
+int dci_query_single_point(const dci* const dci_inst, int actual_level, int num_neighbours, const double* const query, const double* const query_proj, dci_query_config query_config, set<Val,Cmp >& top_candidates, int if_query, int root_index);
+void dci_assign_parent(dci*  dci_inst, const int actual_level, int query_pos, const dci_query_config query_config, int root_index);
+void delete_node(dci* const dci_inst, Node* point_to_delete_next, const dci_query_config query_config);
+void dci_reassign_all_nodes(dci* const dci_inst, int num_points);
+void dci_recompute_top_candidates(dci* const dci_inst, Node* point_to_reassign, const dci_query_config query_config, int root_index);
+void dci_init(dci* const dci_inst, const int dim, const int num_comp_indices, const int num_simp_indices, const int num_levels);
+void dci_add(dci* const dci_inst, const int dim, const int num_points, const double* const data, const int num_levels, const dci_query_config construction_query_config);
+void dci_subsequent_addition(dci* const dci_inst, const int dim, const int num_points, const double* const data, const int num_levels, const dci_query_config construction_query_config);
+void dci_query(dci* const dci_inst, const int dim, const int num_points, const double* const query, const double* const data, const int num_levels, const dci_query_config construction_query_config);
+
+#endif // DCI_H
