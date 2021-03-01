@@ -13,4 +13,4 @@ or deletion will not require to create a new tree.
 
 # Algorithm
 
-See this [doc]
+See this [doc](https://docs.google.com/document/d/19QlKqkneTds5Vr7ZUltjgJhTb8FqRVt70L8zXDYK34I/edit?usp=sharing)
