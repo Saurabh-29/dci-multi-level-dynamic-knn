@@ -23,12 +23,7 @@ typedef struct Val
 struct Cmp{ //Comparator to sort the points on base of val and tie-breaker based on global-id
 bool operator() (Val a, Val b)
 {   
-    if (a.val == b.val)
-    {   
-        // if(a.global_id==b.global_id){
-        //     return a.local_id<b.local_id;
-        // }
-        
+    if (a.val == b.val){  
         return a.global_id<b.global_id;
     }
     return a.val<b.val;

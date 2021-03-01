@@ -1,25 +1,13 @@
-
 #ifndef UTILS_H
 #define UTILS_H
 
 #include <iostream> 
-#include <set>
-#include <iterator> 
 #include <assert.h>
 #include <math.h>
 #include <stdlib.h>
 #include <cstdio>
 
 using namespace std; 
-
-
-// struct Val
-// {
-//     double val;
-//     // double *data_ptr;
-//     int global_id;
-//     int local_id;
-// };
 
 extern "C" {
 #ifdef USE_MKL
